@@ -14,6 +14,10 @@ use yii\helpers\FileHelper;
 
 class UploadBehavior extends Behavior
 {
+    /**
+     * @event Событие которое вызывается после успешной загрузки файла
+     */
+    const EVENT_AFTER_UPLOAD = 'afterUpload';
 
     /**
      * @var string|array Аттрибуты которые будут использоватся для сохранения пути к изображению
@@ -43,12 +47,32 @@ class UploadBehavior extends Behavior
      * ]
      * ~~~
      */
-    public $paths;
+    public $path;
 
     /**
-     * @var string Путь к временой папке в которой загружены файлы.
+     * @var string|array Путь к временой папке в которой загружены файлы.
+     *
+     * Если поведение затрагивает несколько аттрибутов, можно указать пути сохранения для каждого отдельно
+     *
+     * Пример использования:
+     * ~~~
+     * [
+     *     'image' => Yii::getAlias('@webroot/path_to_temp_images'),
+     *     'thumb' => Yii::getAlias('@webroot/path_to_temp_thumbs'),
+     * ]
+     * ~~~
      */
     public $tempPath;
+
+    /**
+     * @var boolean В случае true текущий файл из атрибута модели будет удалён.
+     */
+    public $deleteOnSave = true;
+
+    /**
+     * @var \yii\db\ActiveRecord
+     */
+    public $owner;
 
     /**
      * @inheritdoc
@@ -69,30 +93,157 @@ class UploadBehavior extends Behavior
     {
         parent::attach($owner);
 
-        if ( ! $this->attributes) {
+        if ( ! is_array($this->attributes) or empty($this->attributes) ) {
             throw new InvalidParamException("Invalid or empty \"{$this->attributes}\" array");
         }
 
-        if ( ! $this->paths ) {
-            throw new InvalidParamException("Empty \"{$this->paths}\".");
+        if ( ! $this->path ) {
+            throw new InvalidParamException("Empty \"{$this->path}\".");
+        }
+
+        if ( ! $this->tempPath ) {
+            throw new InvalidParamException("Empty \"{$this->tempPath}\".");
         }
 
         if( ! is_array($this->attributes) ) {
             $this->attributes = [ $this->attributes ];
         }
 
-        if( ! is_array($this->paths) ) {
-            $path = FileHelper::normalizePath($this->paths) . DIRECTORY_SEPARATOR;
+        $this->path = ( is_array($this->path) )
+            ? array_map(function($path){ return FileHelper::normalizePath($path) . DIRECTORY_SEPARATOR; }, $this->path)
+            : array_fill_keys($this->attributes, FileHelper::normalizePath($this->path) . DIRECTORY_SEPARATOR);
 
-            array_walk($this->attributes, function($attribute) use($path) {
-                $this->paths[ $attribute ] = $path;
-            });
-        }
-        else {
-            array_walk($this->paths, function($path, $attribute) use($this) {
-                $this->paths[ $attribute ] = FileHelper::normalizePath($path) . DIRECTORY_SEPARATOR;;
-            });
+        $this->tempPath = ( is_array($this->tempPath) )
+            ? array_map(function($path){ return FileHelper::normalizePath($path) . DIRECTORY_SEPARATOR; }, $this->tempPath)
+            : array_fill_keys($this->attributes, FileHelper::normalizePath($this->tempPath) . DIRECTORY_SEPARATOR);
+    }
+
+    /**
+     * Функция срабатывает в момент создания новой записи моедли.
+     */
+    public function beforeInsert()
+    {
+        if (in_array($this->owner->scenario, $this->scenarios)) {
+            foreach ($this->attributes as $attribute) {
+                if ($this->owner->$attribute) {
+                    $fileTempPath = $this->getTempPath($attribute);
+
+                    if ( is_file($fileTempPath) ) {
+                        rename($fileTempPath, $this->getPath($attribute));
+
+                        $this->triggerEventAfterUpload();
+                    }
+                    else {
+                        unset($this->owner->$attribute);
+                    }
+                }
+            }
         }
     }
 
+    /**
+     * Функция срабатывает в момент обновления существующей записи моедли.
+     */
+    public function beforeUpdate()
+    {
+        if (in_array($this->owner->scenario, $this->scenarios)) {
+            foreach ($this->attributes as $attribute) {
+                if ($this->owner->isAttributeChanged($attribute)) {
+                    $fileTempPath = $this->getTempPath($attribute);
+
+                    if ( is_file($fileTempPath) ) {
+                        rename($fileTempPath, $this->getPath($attribute));
+
+                        if ($this->deleteOnSave === true and $this->owner->getOldAttribute($attribute)) {
+                            $this->delete($attribute, true);
+                        }
+
+                        $this->triggerEventAfterUpload();
+                    }
+                    else {
+                        $this->owner->setAttribute($attribute, $this->owner->getOldAttribute($attribute));
+                    }
+                }
+            }
+        }
+
+        // Удаляем указаные атрибуты и их файлы если это нужно
+        if (!empty($this->deleteScenarios) and in_array($this->owner->scenario, $this->deleteScenarios)) {
+            foreach ($this->deleteScenarios as $attribute => $scenario) {
+                if ($this->owner->scenario === $scenario) {
+                    $file = $this->getPath($attribute);
+
+                    if (is_file($file) and unlink($file)) {
+                        $this->owner->$attribute = null;
+                    }
+                }
+            }
+        }
+    }
+
+    /**
+     * Функция срабатывает в момент удаления существующей записи моедли.
+     */
+    public function beforeDelete()
+    {
+        foreach ($this->attributes as $attribute) {
+            if ($this->owner->$attribute) {
+                $this->delete($attribute);
+            }
+        }
+    }
+
+    /**
+     * Удаляем старый файл.
+     *
+     * @param string $attribute Атрибут для которого нужно вернуть путь загрузки.
+     * @param bool   $old       Получить путь для уже сохраненного файла
+     */
+    protected function delete($attribute, $old = false)
+    {
+        $file = $this->getPath($attribute, $old);
+
+        if (is_file($file)) {
+            unlink($file);
+        }
+    }
+
+    /**
+     * Определяем событие [[EVENT_AFTER_UPLOAD]] для текущей модели.
+     */
+    protected function triggerEventAfterUpload()
+    {
+        $this->owner->trigger(self::EVENT_AFTER_UPLOAD);
+    }
+
+    /**
+     * Получить путь к файлу
+     *
+     * @param string $attribute Атрибут для которого нужно вернуть путь загрузки.
+     * @param bool   $old       Получить путь для уже сохраненного файла
+     *
+     * @return string Путь загрузки файла.
+     */
+    public function getPath($attribute, $old = false)
+    {
+        $fileName = ($old === true)
+            ? $this->owner->getOldAttribute($attribute)
+            : $this->owner->$attribute;
+
+        return (FileHelper::createDirectory( $this->path[$attribute]) )
+            ? $this->path[$attribute] . $fileName
+            : null;
+    }
+
+    /**
+     * Получить путь к временному файлу
+     *
+     * @param string $attribute Атрибут для которого нужно вернуть путь загрузки.
+     *
+     * @return string Временный путь загрузки файла.
+     */
+    public function getTempPath($attribute)
+    {
+        return $this->tempPath[$attribute] . $this->owner->$attribute;
+    }
 } 
