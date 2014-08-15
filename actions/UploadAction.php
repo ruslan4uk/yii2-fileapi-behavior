@@ -17,6 +17,33 @@ use yii\validators\Validator;
 use yii\web\BadRequestHttpException;
 use yii\web\UploadedFile;
 
+/**
+ * UploadAction действие для загрузки файлов.
+ * Использует в качестве валидаторов [[yii\validators\FileValidator]] или [[yii\validators\ImageValidator]],
+ * таким образом доступны все параметры для настройки данных классов.
+ *
+ * Пример использования:
+ * ```php
+ * use lembadm\fileapi\actions\UploadAction;
+ *
+ * public function actions()
+ * {
+ *     return [
+ *         'uploadTempImage' => [
+ *             'class' => UploadAction::className(),
+ *             'path' => $this->module->imageTempPath(),
+ *             'types' => $this->module->imageAllowedExtensions,
+ *             'minHeight' => $this->module->imageHeight,
+ *             'minWidth' => $this->module->imageWidth
+ *         ],
+ *         'deleteTempImage' => [
+ *             'class' => DeleteAction::className(),
+ *             'path' => $this->module->imageTempPath()
+ *         ],
+ *     ];
+ * }
+ * ```
+ */
 class UploadAction extends Action
 {
     /**
