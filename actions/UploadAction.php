@@ -30,11 +30,14 @@ use yii\web\UploadedFile;
  * {
  *     return [
  *         'uploadTempImage' => [
- *             'class' => UploadAction::className(),
- *             'path' => $this->module->imageTempPath(),
- *             'types' => $this->module->imageAllowedExtensions,
- *             'minHeight' => $this->module->imageHeight,
- *             'minWidth' => $this->module->imageWidth
+ *             'class'     => UploadAction::className(),
+ *             'path'      => Yii::getAlias('@webroot/path_to_images'),
+ *             'types'     => ['jpg', 'png', 'gif'],
+ *             'minHeight' => 100,
+ *             'maxHeight' => 1000,
+ *             'minWidth'  => 100,
+ *             'maxWidth'  => 100,
+ *             'maxSize'   => 3145728 // 3*1024*1024 = 3MB
  *         ],
  *     ];
  * }

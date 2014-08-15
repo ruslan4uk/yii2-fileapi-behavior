@@ -27,7 +27,7 @@ use yii\helpers\FileHelper;
  *               'class' => UploadBehavior::className(),
  *               'attributes' => ['image', 'thumb'],
  *               'deleteScenarios' => [
- *                    'thumb' => 'delete-thumb',
+ *                   'thumb' => 'delete-thumb',
  *               ],
  *               'scenarios' => ['signup', 'update'],
  *               'path' => [
