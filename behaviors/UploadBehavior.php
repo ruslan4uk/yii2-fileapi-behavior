@@ -12,6 +12,29 @@ use yii\base\InvalidParamException;
 use yii\db\ActiveRecord;
 use yii\helpers\FileHelper;
 
+/**
+ * Class UploadBehavior
+ * Поведение для загрузки файлов.
+ *
+ * Пример использования:
+ * ```
+ * ...
+ * 'uploadBehavior' => [
+ *     'class' => UploadBehavior::className(),
+ *     'attributes' => ['image', 'thumb'],
+ *     'deleteScenarios' => [
+ *         'thumb' => 'delete-thumb',
+ *     ],
+ *     'scenarios' => ['signup', 'update'],
+ *     'path' => [
+ *         'image' => Yii::getAlias('@webroot/path_to_images'),
+ *         'thumb' => Yii::getAlias('@webroot/path_to_thumbs'),
+ *     ],
+ *     'tempPath' => Yii::getAlias('@webroot/uploads'),
+ * ]
+ * ...
+ * ```
+ */
 class UploadBehavior extends Behavior
 {
     /**
