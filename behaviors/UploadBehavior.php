@@ -84,7 +84,7 @@ class UploadBehavior extends Behavior
         if( ! is_array($this->paths) ) {
             $path = FileHelper::normalizePath($this->paths) . DIRECTORY_SEPARATOR;
 
-            array_walk($this->attributes, function($attribute) use($this, $path) {
+            array_walk($this->attributes, function($attribute) use($path) {
                 $this->paths[ $attribute ] = $path;
             });
         }
