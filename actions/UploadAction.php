@@ -36,10 +36,6 @@ use yii\web\UploadedFile;
  *             'minHeight' => $this->module->imageHeight,
  *             'minWidth' => $this->module->imageWidth
  *         ],
- *         'deleteTempImage' => [
- *             'class' => DeleteAction::className(),
- *             'path' => $this->module->imageTempPath()
- *         ],
  *     ];
  * }
  * ```
