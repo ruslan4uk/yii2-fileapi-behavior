@@ -17,6 +17,7 @@ use lembadm\fileapi\FileAPI;
  */
 ?>
 <div id="<?= $selector; ?>" class="uploader">
+    <div class="uploader-file-preview"></div>
     <div class="btn btn-default js-fileapi-wrapper">
         <div class="uploader-browse">
             <?= FileAPI::t('fileapi', 'Выбрать') ?>

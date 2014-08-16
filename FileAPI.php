@@ -46,7 +46,12 @@ class FileAPI extends InputWidget
             'active' => [
                 'show' => '.uploader-progress',
                 'hide' => '.uploader-browse'
-            ]
+            ],
+            'preview' => [
+                'el'     => '.uploader-file-preview',
+                'width'  => 100,
+                'height' => 100
+            ],
         ]
     ];
 
