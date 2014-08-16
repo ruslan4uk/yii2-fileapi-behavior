@@ -7,6 +7,8 @@
 
 namespace lembadm\fileapi;
 
+use lembadm\fileapi\assets\MultipleAsset;
+use lembadm\fileapi\assets\SingleAsset;
 use Yii;
 use yii\helpers\FileHelper;
 use yii\helpers\Html;
@@ -156,12 +158,12 @@ class FileAPI extends InputWidget
         // В случае мульти-загрузки добавляем индекс переменную.
         if ($this->isMultiple()) {
             // Регистрируем мульти-загрузочный бандл виджета
-            FileAPIMultipleAsset::register($view);
+            MultipleAsset::register($view);
             $view->registerJs("var indexKey = 0;");
         }
         else {
             // Регистрируем стандартный бандл виджета
-            FileAPISingleAsset::register($view);
+            SingleAsset::register($view);
         }
     }
 
