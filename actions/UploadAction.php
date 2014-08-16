@@ -30,14 +30,14 @@ use yii\web\UploadedFile;
  * {
  *     return [
  *         'uploadTempImage' => [
- *             'class'     => UploadAction::className(),
- *             'path'      => Yii::getAlias('@webroot/path_to_images'),
- *             'types'     => ['jpg', 'png', 'gif'],
- *             'minHeight' => 100,
- *             'maxHeight' => 1000,
- *             'minWidth'  => 100,
- *             'maxWidth'  => 100,
- *             'maxSize'   => 3145728 // 3*1024*1024 = 3MB
+ *             'class'      => UploadAction::className(),
+ *             'path'       => Yii::getAlias('@webroot/path_to_images'),
+ *             'extensions' => ['jpg', 'png', 'gif'],
+ *             'minHeight'  => 100,
+ *             'maxHeight'  => 1000,
+ *             'minWidth'   => 100,
+ *             'maxWidth'   => 100,
+ *             'maxSize'    => 3145728 // 3*1024*1024 = 3MB
  *         ],
  *     ];
  * }
@@ -326,9 +326,10 @@ class UploadAction extends Action
                     $model->file->name = uniqid() . '.' . $model->file->extension;
                 }
 
-                $model->file->saveAs( $this->getSavePath($model->file->name) );
+                $filePath = $this->getSavePath($model->file->name);
+                $model->file->saveAs( $filePath );
 
-                return Json::encode([ 'name' => $model->file->name ]);
+                return Json::encode([ 'name' => $filePath ]);
             }
 
             return Json::encode([ 'error' => $model->getFirstError('file') ]);

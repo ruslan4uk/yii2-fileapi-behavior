@@ -14,7 +14,6 @@ use yii\helpers\FileHelper;
 use yii\helpers\Html;
 use yii\helpers\Json;
 use yii\web\JsExpression;
-use yii\web\YiiAsset;
 use yii\widgets\InputWidget;
 
 class FileAPI extends InputWidget
@@ -197,21 +196,21 @@ class FileAPI extends InputWidget
                 : Html::hiddenInput('[{%key}]' . $this->name, $this->value, $this->options);
 
             return new JsExpression("function (evt, uiEvt) {
-				if (uiEvt.result.error) {
-					alert(uiEvt.result.error);
-				} else {
-					var uinput = '$input',
-					    uid = FileAPI.uid(uiEvt.file),
-					    ureplace = {
-					    	'{%key}' : indexKey,
-					    	'{%value}' : uiEvt.result.name
-					    };
-					uinput = uinput.replace(/{%key}|{%value}/gi, function (index) {
-						return ureplace[index];
-					});
-			        ufile = jQuery(this).find('div[data-fileapi-id=\"' + uid + '\"] .uploader-file-fields').html(uinput);
-				}
-			}");
+                if (uiEvt.result.error) {
+                    alert(uiEvt.result.error);
+                } else {
+                    var uinput = '$input',
+                        uid = FileAPI.uid(uiEvt.file),
+                        ureplace = {
+                            '{%key}' : indexKey,
+                            '{%value}' : uiEvt.result.name
+                        };
+                    uinput = uinput.replace(/{%key}|{%value}/gi, function (index) {
+                        return ureplace[index];
+                    });
+                    ufile = jQuery(this).find('div[data-fileapi-id=\"' + uid + '\"] .uploader-file-fields').html(uinput);
+                }
+            }");
         }
 
         return new JsExpression('function (evt, uiEvt) {
