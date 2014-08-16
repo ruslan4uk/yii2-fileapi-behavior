@@ -80,7 +80,7 @@ class UploadAction extends Action
      * Расширение файла чувствительно к регистру символов.
      * По умолчанию null - любое расширение
      */
-    public $types;
+    public $extensions;
 
     /**
      * @var integer Минимальный размер в байтах для загружаемого файла
@@ -141,7 +141,7 @@ class UploadAction extends Action
      * - {file}: имя загруженного файла
      * - {extensions}: список разрешенных расширений
      */
-    public $wrongType;
+    public $wrongExtension;
 
     /**
      * @var string Сообщение об ошибке - кол-во загружаемых файлов превышает лимит [[maxFiles]]
@@ -273,7 +273,8 @@ class UploadAction extends Action
         $this->path = FileHelper::normalizePath($this->path) . DIRECTORY_SEPARATOR;
 
         $this->_validatorOptions = [
-            'types'          => $this->types,
+            'extensions'     => $this->extensions,
+            'mimeTypes'      => $this->mimeTypes,
             'minSize'        => $this->minSize,
             'maxSize'        => $this->maxSize,
             'maxFiles'       => $this->maxFiles,
@@ -281,8 +282,9 @@ class UploadAction extends Action
             'uploadRequired' => $this->uploadRequired,
             'tooBig'         => $this->tooBig,
             'tooSmall'       => $this->tooSmall,
-            'wrongType'      => $this->wrongType,
-            'tooMany'        => $this->tooMany
+            'tooMany'        => $this->tooMany,
+            'wrongExtension' => $this->wrongExtension,
+            'wrongMimeType'  => $this->wrongMimeType,
         ];
 
         if ($this->imageValidator === true) {
@@ -292,12 +294,10 @@ class UploadAction extends Action
             $this->_validatorOptions['maxWidth']      = $this->maxWidth;
             $this->_validatorOptions['minHeight']     = $this->minHeight;
             $this->_validatorOptions['maxHeight']     = $this->maxHeight;
-            $this->_validatorOptions['mimeTypes']     = $this->mimeTypes;
             $this->_validatorOptions['underWidth']    = $this->underWidth;
             $this->_validatorOptions['overWidth']     = $this->overWidth;
             $this->_validatorOptions['underHeight']   = $this->underHeight;
             $this->_validatorOptions['overHeight']    = $this->overHeight;
-            $this->_validatorOptions['wrongMimeType'] = $this->wrongMimeType;
         }
         else {
             $this->_validator = 'file';
