@@ -153,7 +153,7 @@ class FileAPI extends InputWidget
             : '#' . $this->getId();
 
         // Инициализируем плагин виджета
-        $view->registerJs('jQuery("' . $selector . '").fileapi(' . Json::encode($this->settings) . '");');
+        $view->registerJs('jQuery("' . $selector . '").fileapi(' . Json::encode($this->settings) . ');');
 
         // В случае мульти-загрузки добавляем индекс переменную.
         if ($this->isMultiple()) {
