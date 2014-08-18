@@ -331,7 +331,7 @@ class UploadAction extends Action
 
                 $model->file->saveAs($this->getSavePath($model->file->name));
 
-                return Json::encode([ 'name' => $this->getSaveUrl($model->file->name) ]);
+                return Json::encode([ 'name' => $model->file->name ]);
             }
 
             return Json::encode([ 'error' => $model->getFirstError('file') ]);
@@ -350,10 +350,5 @@ class UploadAction extends Action
         return (FileHelper::createDirectory($this->path))
             ? $this->path . $fileName
             : null;
-    }
-
-    protected function getSaveUrl($fileName = '')
-    {
-        return $this->url . $fileName;
     }
 }
