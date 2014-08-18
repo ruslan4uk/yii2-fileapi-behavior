@@ -56,6 +56,9 @@ class UploadAction extends Action
      */
     public $path;
 
+    /* TODO */
+    public $url;
+
     /**
      * @var string Название переменной в которой хранится загружаемый файл
      */
@@ -326,10 +329,9 @@ class UploadAction extends Action
                     $model->file->name = uniqid() . '.' . $model->file->extension;
                 }
 
-                $filePath = $this->getSavePath($model->file->name);
-                $model->file->saveAs( $filePath );
+                $model->file->saveAs($this->getSavePath($model->file->name));
 
-                return Json::encode([ 'name' => $filePath ]);
+                return Json::encode([ 'name' => $this->getSaveUrl($model->file->name) ]);
             }
 
             return Json::encode([ 'error' => $model->getFirstError('file') ]);
@@ -343,10 +345,15 @@ class UploadAction extends Action
      *
      * @return string Полный путь до папки куда нужно сохранить файл.
      */
-    protected function getSavePath($fileName)
+    protected function getSavePath($fileName = '')
     {
         return (FileHelper::createDirectory($this->path))
             ? $this->path . $fileName
             : null;
     }
-} 
+
+    protected function getSaveUrl($fileName = '')
+    {
+        return $this->url . $fileName;
+    }
+}
