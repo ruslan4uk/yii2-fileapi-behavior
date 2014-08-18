@@ -10,7 +10,7 @@ namespace lembadm\fileapi\models;
 use yii\base\Model;
 
 /**
- * Загрузочная модель файлов.
+ * Vодель загрузки файлов.
  */
 class Upload extends Model
 {
