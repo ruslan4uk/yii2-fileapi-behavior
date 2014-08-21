@@ -8,7 +8,10 @@
 namespace lembadm\fileapi;
 
 use yii\helpers\Html;
+use yii\helpers\Json;
 use yii\web\JsExpression;
+use lembadm\fileapi\assets\AdvancedAsset;
+use lembadm\fileapi\assets\AdvancedCropAsset;
 
 class FileAPIAdvanced extends FileAPI
 {
@@ -161,8 +164,12 @@ class FileAPIAdvanced extends FileAPI
     {
         $view = $this->getView();
 
+        $selector = ($this->selector !== null)
+            ? '#' . $this->selector
+            : '#' . $this->getId();
+
         // Инициализируем плагин виджета
-        $this->registerMainClientScript();
+        $view->registerJs('jQuery("' . $selector . '").fileapi(' . Json::encode($this->settings) . ');');
 
         if ($this->crop !== false) {
             AdvancedCropAsset::register($view);
