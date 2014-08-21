@@ -10,6 +10,16 @@
 			"email": "lembadm@gmail.com"
 		}
 	],
+	"require": {
+		"php": ">=5.4.0",
+		"rubaxa/fileapi": "*"
+	},
+	"repositories":[
+		{
+			"type": "git",
+			"url": "https://github.com/RubaXa/jquery.fileapi"
+		}
+	],
 	"autoload": {
 		"psr-4": {
 			"lembadm\\fileapi\\": ""
