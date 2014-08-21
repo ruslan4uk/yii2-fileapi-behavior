@@ -15,9 +15,6 @@ use yii\web\AssetBundle;
 class FileAPIAsset extends AssetBundle
 {
     public $sourcePath = '@vendor/rubaxa/fileapi';
-    public $css = [
-        'css/single.css'
-    ];
     public $js = [
         'FileAPI/FileAPI.min.js',
         'jquery.fileapi.min.js'
