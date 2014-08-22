@@ -122,15 +122,15 @@ class UploadBehavior extends Behavior
         parent::attach($owner);
 
         if ( ! is_array($this->attributes) or empty($this->attributes) ) {
-            throw new InvalidParamException("Invalid or empty \"{$this->attributes}\" array");
+            throw new InvalidParamException("Invalid or empty attributes array");
         }
 
         if ( ! $this->path ) {
-            throw new InvalidParamException("Empty \"{$this->path}\".");
+            throw new InvalidParamException("Empty path");
         }
 
         if ( ! $this->tempPath ) {
-            throw new InvalidParamException("Empty \"{$this->tempPath}\".");
+            throw new InvalidParamException("Empty tempPath");
         }
 
         if( ! is_array($this->attributes) ) {
