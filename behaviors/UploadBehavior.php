@@ -7,6 +7,7 @@
 
 namespace fileapi\behaviors;
 
+use Yii;
 use yii\base\Behavior;
 use yii\base\InvalidParamException;
 use yii\db\ActiveRecord;
@@ -14,6 +15,8 @@ use yii\helpers\FileHelper;
 
 /**
  * Class UploadBehavior
+ * @package fileapi\behaviors
+ *
  * Поведение для загрузки файлов.
  *
  * Пример использования:
@@ -31,14 +34,17 @@ use yii\helpers\FileHelper;
  *               ],
  *               'scenarios' => ['signup', 'update'],
  *               'path' => [
- *                   'image' => Yii::getAlias('@webroot/path_to_images'),
- *                   'thumb' => Yii::getAlias('@webroot/path_to_thumbs'),
+ *                   'image' => '@webroot/path_to_images',
+ *                   'thumb' => '@webroot/path_to_thumbs',
  *               ],
- *               'tempPath' => Yii::getAlias('@webroot/uploads'),
+ *               'tempPath' => '@webroot/uploads',
  *          ]
  *     ];
  * }
  * ```
+ *
+ * @property array|string $tempPath
+ * @property array|string  $path
  */
 class UploadBehavior extends Behavior
 {
@@ -70,12 +76,22 @@ class UploadBehavior extends Behavior
      * Пример использования:
      * ~~~
      * [
-     *     'image' => Yii::getAlias('@webroot/path_to_images'),
-     *     'thumb' => Yii::getAlias('@webroot/path_to_thumbs'),
+     *     'image' => '@webroot/path_to_images',
+     *     'thumb' => '@webroot/path_to_thumbs',
      * ]
      * ~~~
      */
-    public $path;
+    private $_path;
+
+    public function getPath()
+    {
+        return $this->normalizePath($this->_path);
+    }
+
+    public function setPath($data)
+    {
+        $this->_path = $data;
+    }
 
     /**
      * @var string|array Путь к временой папке в которой загружены файлы.
@@ -85,12 +101,22 @@ class UploadBehavior extends Behavior
      * Пример использования:
      * ~~~
      * [
-     *     'image' => Yii::getAlias('@webroot/path_to_temp_images'),
-     *     'thumb' => Yii::getAlias('@webroot/path_to_temp_thumbs'),
+     *     'image' => '@webroot/path_to_temp_images',
+     *     'thumb' => '@webroot/path_to_temp_thumbs',
      * ]
      * ~~~
      */
-    public $tempPath;
+    private $_tempPath;
+
+    public function getTempPath()
+    {
+        return $this->normalizePath($this->_tempPath);
+    }
+
+    public function setTempPath($data)
+    {
+        $this->_tempPath = $data;
+    }
 
     /**
      * @var boolean В случае true текущий файл из атрибута модели будет удалён.
@@ -121,29 +147,41 @@ class UploadBehavior extends Behavior
     {
         parent::attach($owner);
 
-        if ( ! is_array($this->attributes) or empty($this->attributes) ) {
+        if (!is_array($this->attributes) or empty($this->attributes)) {
             throw new InvalidParamException("Invalid or empty attributes array");
         }
 
-        if ( ! $this->path ) {
+        if (!$this->path) {
             throw new InvalidParamException("Empty path");
         }
 
-        if ( ! $this->tempPath ) {
+        if (!$this->tempPath) {
             throw new InvalidParamException("Empty tempPath");
         }
 
-        if( ! is_array($this->attributes) ) {
-            $this->attributes = [ $this->attributes ];
+        if (!is_array($this->attributes)) {
+            $this->attributes = [$this->attributes];
         }
+    }
 
-        $this->path = ( is_array($this->path) )
-            ? array_map(function($path){ return FileHelper::normalizePath($path) . DIRECTORY_SEPARATOR; }, $this->path)
-            : array_fill_keys($this->attributes, FileHelper::normalizePath($this->path) . DIRECTORY_SEPARATOR);
+    /**
+     * @param array|string $path
+     * @return array
+     */
+    protected function normalizePath($path)
+    {
 
-        $this->tempPath = ( is_array($this->tempPath) )
-            ? array_map(function($path){ return FileHelper::normalizePath($path) . DIRECTORY_SEPARATOR; }, $this->tempPath)
-            : array_fill_keys($this->attributes, FileHelper::normalizePath($this->tempPath) . DIRECTORY_SEPARATOR);
+        if (is_array($path)) {
+            return array_map(function ($data) {
+                $data = Yii::getAlias($data);
+                $data = FileHelper::normalizePath($data);
+                return $data;
+            }, $path);
+        } else {
+            $path = Yii::getAlias($path);
+            $path = FileHelper::normalizePath($path);
+            return array_fill_keys($this->attributes, $path);
+        }
     }
 
     /**
@@ -151,17 +189,16 @@ class UploadBehavior extends Behavior
      */
     public function beforeInsert()
     {
-        if (in_array($this->owner->scenario, $this->scenarios)) {
+        if (empty($this->scenarios) || in_array($this->owner->scenario, $this->scenarios)) {
             foreach ($this->attributes as $attribute) {
                 if ($this->owner->$attribute) {
-                    $fileTempPath = $this->getTempPath($attribute);
+                    $fileTempPath = $this->getTempUploadPath($attribute);
 
-                    if ( is_file($fileTempPath) ) {
-                        rename($fileTempPath, $this->getPath($attribute));
+                    if (is_file($fileTempPath)) {
+                        rename($fileTempPath, $this->getUploadPath($attribute));
 
                         $this->triggerEventAfterUpload();
-                    }
-                    else {
+                    } else {
                         unset($this->owner->$attribute);
                     }
                 }
@@ -174,21 +211,20 @@ class UploadBehavior extends Behavior
      */
     public function beforeUpdate()
     {
-        if (in_array($this->owner->scenario, $this->scenarios)) {
+        if (empty($this->scenarios) || in_array($this->owner->scenario, $this->scenarios)) {
             foreach ($this->attributes as $attribute) {
                 if ($this->owner->isAttributeChanged($attribute)) {
-                    $fileTempPath = $this->getTempPath($attribute);
+                    $fileTempPath = $this->getTempUploadPath($attribute);
 
-                    if ( is_file($fileTempPath) ) {
-                        rename($fileTempPath, $this->getPath($attribute));
+                    if (is_file($fileTempPath)) {
+                        rename($fileTempPath, $this->getUploadPath($attribute));
 
-                        if ($this->deleteOnSave === true and $this->owner->getOldAttribute($attribute)) {
+                        if ($this->deleteOnSave === true) {
                             $this->delete($attribute, true);
                         }
 
                         $this->triggerEventAfterUpload();
-                    }
-                    else {
+                    } else {
                         $this->owner->setAttribute($attribute, $this->owner->getOldAttribute($attribute));
                     }
                 }
@@ -199,7 +235,7 @@ class UploadBehavior extends Behavior
         if (!empty($this->deleteScenarios) and in_array($this->owner->scenario, $this->deleteScenarios)) {
             foreach ($this->deleteScenarios as $attribute => $scenario) {
                 if ($this->owner->scenario === $scenario) {
-                    $file = $this->getPath($attribute);
+                    $file = $this->getUploadPath($attribute);
 
                     if (is_file($file) and unlink($file)) {
                         $this->owner->$attribute = null;
@@ -225,11 +261,11 @@ class UploadBehavior extends Behavior
      * Удаляем старый файл.
      *
      * @param string $attribute Атрибут для которого нужно вернуть путь загрузки.
-     * @param bool   $old       Получить путь для уже сохраненного файла
+     * @param bool $old Получить путь для уже сохраненного файла
      */
     protected function delete($attribute, $old = false)
     {
-        $file = $this->getPath($attribute, $old);
+        $file = $this->getUploadPath($attribute, $old);
 
         if (is_file($file)) {
             unlink($file);
@@ -248,18 +284,18 @@ class UploadBehavior extends Behavior
      * Получить путь к файлу
      *
      * @param string $attribute Атрибут для которого нужно вернуть путь загрузки.
-     * @param bool   $old       Получить путь для уже сохраненного файла
+     * @param bool $old Получить путь для уже сохраненного файла
      *
      * @return string Путь загрузки файла.
      */
-    public function getPath($attribute, $old = false)
+    protected function getUploadPath($attribute, $old = false)
     {
         $fileName = ($old === true)
             ? $this->owner->getOldAttribute($attribute)
             : $this->owner->$attribute;
 
-        return (FileHelper::createDirectory( $this->path[$attribute]) )
-            ? $this->path[$attribute] . $fileName
+        return (FileHelper::createDirectory($this->path[$attribute]))
+            ? $this->path[$attribute] . DIRECTORY_SEPARATOR . $fileName
             : null;
     }
 
@@ -270,8 +306,8 @@ class UploadBehavior extends Behavior
      *
      * @return string Временный путь загрузки файла.
      */
-    public function getTempPath($attribute)
+    protected function getTempUploadPath($attribute)
     {
-        return $this->tempPath[$attribute] . $this->owner->$attribute;
+        return $this->tempPath[$attribute] . DIRECTORY_SEPARATOR . $this->owner->$attribute;
     }
 } 

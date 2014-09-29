@@ -27,7 +27,7 @@ class FileAPIAdvanced extends FileAPI
     public $deleteTempUrl;
 
     /**
-     * @var string ID текущей моедли, или в случае её отсутсвия,
+     * @var string ID текущей модели, или в случае её отсутсвия,
      * значение которое будет передано через AJAX запрос в метод удаления текущего файла.
      */
     public $modelId;
@@ -88,6 +88,8 @@ class FileAPIAdvanced extends FileAPI
      */
     public function init()
     {
+        parent::init();
+
         // Определяем контейнер превью
         if ( $this->preview ) {
             $this->_defaultSingleSettings['elements']['preview'] = [
@@ -117,8 +119,6 @@ class FileAPIAdvanced extends FileAPI
         if ($this->crop) {
             $this->settings['autoUpload'] = false;
         }
-
-        parent::init();
     }
 
     /**
@@ -241,13 +241,12 @@ class FileAPIAdvanced extends FileAPI
                 $cropResizeWidth = $this->cropResizeWidth;
                 $cropResizeHeight = $this->cropResizeHeight;
                 $cropResizeJs = "el.fileapi('resize', ufile, $cropResizeWidth, $cropResizeHeight);";
-            }
-            else {
+            } else {
                 $cropResizeJs = '';
             }
 
             // Регистрируем обработчик события для вывода окна выделения изображения.
-            $this->_defaultSettings['onSelect'] = new JsExpression("function (evt, ui){
+            $this->_defaultSingleSettings['onSelect'] = new JsExpression("function (evt, ui){
                 var ufile = ui.files[0],
                     el = jQuery(this);
                 if (ufile) {
@@ -279,7 +278,7 @@ class FileAPIAdvanced extends FileAPI
 
         // Определяем если нужно выводить ссылку для удаления загружаемого файла.
         if ($this->deleteTempUrl !== null) {
-            $this->_defaultSettings['onFileComplete'] = new JsExpression("function (evt, uiEvt) {
+            $this->_defaultSingleSettings['onFileComplete'] = new JsExpression("function (evt, uiEvt) {
                 if (uiEvt.result.error) {
                     alert(uiEvt.result.error);
                 } else {
@@ -291,7 +290,7 @@ class FileAPIAdvanced extends FileAPI
             }");
         }
         else {
-            $this->_defaultSettings['onFileComplete'] = new JsExpression("function (evt, uiEvt) {
+            $this->_defaultSingleSettings['onFileComplete'] = new JsExpression("function (evt, uiEvt) {
                 if (uiEvt.result.error) {
                     alert(uiEvt.result.error);
                 } else {

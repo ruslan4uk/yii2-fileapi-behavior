@@ -31,7 +31,7 @@ use yii\web\UploadedFile;
  *     return [
  *         'uploadTempImage' => [
  *             'class'      => UploadAction::className(),
- *             'path'       => Yii::getAlias('@webroot/path_to_images'),
+ *             'path'       => '@webroot/path_to_images',
  *             'extensions' => ['jpg', 'png', 'gif'],
  *             'minHeight'  => 100,
  *             'maxHeight'  => 1000,
@@ -273,7 +273,7 @@ class UploadAction extends Action
             throw new InvalidConfigException("Empty \"{$this->path}\".");
         }
 
-        $this->path = FileHelper::normalizePath($this->path) . DIRECTORY_SEPARATOR;
+        $this->path = $this->normalizePath($this->path);
 
         $this->_validatorOptions = [
             'extensions'     => $this->extensions,
@@ -305,6 +305,14 @@ class UploadAction extends Action
         else {
             $this->_validator = 'file';
         }
+    }
+
+    public function normalizePath($path)
+    {
+        $path = Yii::getAlias($path);
+        $path = FileHelper::normalizePath($path) ;
+
+        return $path;
     }
 
     /**
@@ -348,7 +356,7 @@ class UploadAction extends Action
     protected function getSavePath($fileName = '')
     {
         return (FileHelper::createDirectory($this->path))
-            ? $this->path . $fileName
+            ? $this->path . DIRECTORY_SEPARATOR . $fileName
             : null;
     }
 }
