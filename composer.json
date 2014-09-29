@@ -2,7 +2,7 @@
 	"name": "lav45/yii2-fileapi-behavior",
 	"description": "Yii2 FileAPI Behavior",
 	"type": "yii2-extension",
-	"keywords": ["yii2","behavior","fileapi"],
+	"keywords": ["yii2","jquery","fileapi","multiupload"],
 	"license": "BSD-3-Clause",
 	"authors": [
 		{
