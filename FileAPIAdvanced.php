@@ -5,13 +5,13 @@
  * @license http://www.astwell.com/license/
  */
 
-namespace lembadm\fileapi;
+namespace fileapi;
 
 use yii\helpers\Html;
 use yii\helpers\Json;
 use yii\web\JsExpression;
-use lembadm\fileapi\assets\AdvancedAsset;
-use lembadm\fileapi\assets\AdvancedCropAsset;
+use fileapi\assets\AdvancedAsset;
+use fileapi\assets\AdvancedCropAsset;
 
 class FileAPIAdvanced extends FileAPI
 {

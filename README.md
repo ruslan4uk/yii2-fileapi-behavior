@@ -10,13 +10,13 @@ The preferred way to install this extension is through [composer](http://getcomp
 Either run
 
 ```
-php composer.phar require --prefer-dist lembadm/yii2-fileapi-behavior "*"
+php composer.phar require --prefer-dist lav45/yii2-fileapi "*"
 ```
 
 or add
 
 ```
-"lembadm/yii2-fileapi-behavior": "*"
+"lav45/yii2-fileapi": "*"
 ```
 
 to the require section of your `composer.json` file.
@@ -28,4 +28,5 @@ Usage
 Once the extension is installed, simply use it in your code by  :
 
 ```php
-<?= \lembadm\fileapi\AutoloadExample::widget(); ?>```
+<?= fileapi\FileAPI::widget(); ?>
+```

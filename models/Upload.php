@@ -5,7 +5,7 @@
  * @license http://www.astwell.com/license/
  */
 
-namespace lembadm\fileapi\models;
+namespace fileapi\models;
 
 use yii\base\Model;
 

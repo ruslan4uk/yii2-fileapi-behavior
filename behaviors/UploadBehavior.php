@@ -5,7 +5,7 @@
  * @license http://www.astwell.com/license/
  */
 
-namespace lembadm\fileapi\behaviors;
+namespace fileapi\behaviors;
 
 use yii\base\Behavior;
 use yii\base\InvalidParamException;
@@ -18,7 +18,7 @@ use yii\helpers\FileHelper;
  *
  * Пример использования:
  * ```php
- * use lembadm\fileapi\behaviors\UploadBehavior;
+ * use fileapi\behaviors\UploadBehavior;
  *
  * public function behaviors()
  * {

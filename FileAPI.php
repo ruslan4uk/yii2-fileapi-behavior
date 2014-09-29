@@ -5,10 +5,10 @@
  * @license http://astwell.com/license/
  */
 
-namespace lembadm\fileapi;
+namespace fileapi;
 
-use lembadm\fileapi\assets\MultipleAsset;
-use lembadm\fileapi\assets\SingleAsset;
+use fileapi\assets\MultipleAsset;
+use fileapi\assets\SingleAsset;
 use Yii;
 use yii\helpers\FileHelper;
 use yii\helpers\Html;

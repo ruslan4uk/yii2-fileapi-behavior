@@ -5,7 +5,7 @@
  * @license http://astwell.com/license/
  */
 
-namespace lembadm\fileapi\assets;
+namespace fileapi\assets;
 
 use yii\web\AssetBundle;
 
@@ -19,6 +19,6 @@ class MultipleAsset extends AssetBundle
         'css/multiple.css'
     ];
     public $depends = [
-        'lembadm\fileapi\assets\FileAPIAsset'
+        'fileapi\assets\FileAPIAsset'
     ];
 }

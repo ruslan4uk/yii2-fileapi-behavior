@@ -5,7 +5,7 @@
  * @license http://www.astwell.com/license/
  */
 
-use lembadm\fileapi\FileAPI;
+use fileapi\FileAPI;
 
 /**
  * Представление мульти-загрузки.

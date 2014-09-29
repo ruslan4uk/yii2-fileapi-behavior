@@ -5,7 +5,7 @@
  * @license http://www.astwell.com/license/
  */
 
-namespace lembadm\fileapi\assets;
+namespace fileapi\assets;
 
 use yii\web\AssetBundle;
 
@@ -21,6 +21,6 @@ class AdvancedAsset extends AssetBundle
     public $depends = [
         'yii\web\YiiAsset',
         'yii\bootstrap\BootstrapAsset',
-        'lembadm\fileapi\assets\FileAPIAsset',
+        'fileapi\assets\FileAPIAsset',
     ];
 }

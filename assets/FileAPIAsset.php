@@ -5,7 +5,7 @@
  * @license http://astwell.com/license/
  */
 
-namespace lembadm\fileapi\assets;
+namespace fileapi\assets;
 
 use yii\web\AssetBundle;
 

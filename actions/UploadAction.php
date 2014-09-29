@@ -5,9 +5,9 @@
  * @license http://www.astwell.com/license/
  */
 
-namespace lembadm\fileapi\actions;
+namespace fileapi\actions;
 
-use lembadm\fileapi\models\Upload;
+use fileapi\models\Upload;
 use Yii;
 use yii\base\Action;
 use yii\base\InvalidConfigException;
@@ -24,7 +24,7 @@ use yii\web\UploadedFile;
  *
  * Пример использования:
  * ```php
- * use lembadm\fileapi\actions\UploadAction;
+ * use fileapi\actions\UploadAction;
  *
  * public function actions()
  * {

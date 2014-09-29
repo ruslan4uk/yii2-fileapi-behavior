@@ -5,7 +5,7 @@
  * @license http://www.astwell.com/license/
  */
 
-namespace lembadm\fileapi\assets;
+namespace fileapi\assets;
 
 use yii\web\AssetBundle;
 
@@ -24,7 +24,7 @@ class AdvancedCropAsset extends AssetBundle
     public $depends = [
         'yii\web\YiiAsset',
         'yii\bootstrap\BootstrapAsset',
-        'lembadm\fileapi\assets\AdvancedAsset',
-        'lembadm\fileapi\assets\JcropAsset'
+        'fileapi\assets\AdvancedAsset',
+        'fileapi\assets\JcropAsset'
     ];
 }

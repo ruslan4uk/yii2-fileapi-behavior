@@ -5,7 +5,7 @@
  * @license http://www.astwell.com/license/
  */
 
-namespace lembadm\fileapi\actions;
+namespace fileapi\actions;
 
 use Yii;
 use yii\base\Action;
@@ -17,7 +17,7 @@ use yii\helpers\FileHelper;
  *
  * Пример использования:
  * ```php
- * use lembadm\fileapi\actions\DeleteAction;
+ * use fileapi\actions\DeleteAction;
  *
  * public function actions()
  * {
