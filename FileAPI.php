@@ -176,12 +176,12 @@ class FileAPI extends InputWidget
      */
     public function registerTranslations()
     {
-        Yii::$app->i18n->translations['lembadm/fileapi/*'] = [
+        Yii::$app->i18n->translations['fileapi/*'] = [
             'class'          => 'yii\i18n\PhpMessageSource',
             'basePath'       => '@fileapi/messages',
             'sourceLanguage' => 'ru',
             'fileMap' => [
-                'lembadm/fileapi/fileapi' => 'fileapi.php',
+                'fileapi/fileapi' => 'fileapi.php',
             ],
         ];
     }
@@ -240,7 +240,7 @@ class FileAPI extends InputWidget
      */
     public static function t($category, $message, $params = [], $language = null)
     {
-        return Yii::t('lembadm/fileapi/' . $category, $message, $params, $language);
+        return Yii::t('fileapi/' . $category, $message, $params, $language);
     }
 
     /**
