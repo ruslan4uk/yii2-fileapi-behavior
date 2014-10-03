@@ -15,7 +15,7 @@
 	],
 	"require": {
 		"php": ">=5.4.0",
-        "rubaxa/fileapi": "dev-master"
+        "bower-asset/jquery.fileapi": "*"
 	},
 	"autoload": {
 		"psr-4": {

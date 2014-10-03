@@ -11,7 +11,7 @@ use yii\web\AssetBundle;
 
 class JcropAsset extends AssetBundle
 {
-    public $sourcePath = '@vendor/rubaxa/fileapi';
+    public $sourcePath = '@vendor/bower/jquery.fileapi';
     public $css = [
         'jcrop/jquery.Jcrop.min.css'
     ];
